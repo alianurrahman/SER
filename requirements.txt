@@ -1,0 +1,3 @@
+pip~=24.2
+wheel~=0.41.2
+setuptools~=68.2.0
