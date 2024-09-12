@@ -1,6 +1,6 @@
-import spleeter
 from __future__ import unicode_literals
-# import youtube_dl
+
+import spleeter
 import yt_dlp as youtube_dl
 from pydub import AudioSegment
 from pydub.silence import split_on_silence
@@ -8,6 +8,13 @@ import csv
 from pathlib import Path
 from termcolor import colored
 import os
+import yaml
+
+def parse_config(config_file):
+
+    with open(config_file, "rb") as f:
+        config = yaml.safe_load(f)
+    return config
 
 def convert_audio(audio_file):
     """

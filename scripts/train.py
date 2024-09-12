@@ -7,17 +7,13 @@ Usage:
     python3 ./scripts/train.py
 
 """
-import logging
 from pathlib import Path
-
-# from cloudpickle import dump
 from pickle import dump
 
 import click
 import pandas as pd
 import sklearn
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import cross_val_score
+from transformers import AutoFeatureExtractor
 
 from utility import load_data, parse_config, set_logger
 
@@ -34,57 +30,38 @@ def train(config_file):
     Returns:
         None
     """
-    ##################
-    # configure logger
-    ##################
-    logger = set_logger("./log/train.log")
+    from transformers import AutoModelForAudioClassification, TrainingArguments, Trainer
 
-    ##################
-    # Load config from config file
-    ##################
-    logger.info(f"Load config from {config_file}")
-    config = parse_config(config_file)
-
-    processed_train = Path(config["train"]["processed_train"])
-    ensemble_model = config["train"]["ensemble_model"]
-    model_config = config["train"]["model_config"]
-    model_path = Path(config["train"]["model_path"])
-
-    logger.info(f"config: {config['train']}")
-
-    ##################
-    # Load data
-    ##################
-    logger.info(f"-------------------Load the processed data-------------------")
-    X, y, cols = load_data(processed_train)
-    logger.info(f"cols: {cols}")
-    logger.info(f"X: {X.shape}")
-    logger.info(f"y: {y.shape}")
-
-    ##################
-    # Set & train model
-    ##################
-    # Load model
-    # Limited to sklearn ensemble for the moment
-    logger.info(f"-------------------Initiate model-------------------")
-    model = initiate_model(ensemble_model, model_config)
-
-    # Train model
-    logger.info(f"Train model using {ensemble_model}, {model_config}")
-    model.fit(X, y)
-    logger.info(f"Train score: {model.score(X, y)}")
-    logger.info(
-        f"CV score: {cross_val_score(estimator=model, X=X, y=y, cv=5).mean()}"
+    num_labels = len(id2label)
+    model = AutoModelForAudioClassification.from_pretrained(
+        "facebook/wav2vec2-base", num_labels=num_labels, label2id=label2id, id2label=id2label
     )
-    ##################
-    # Persist model
-    ##################
+    training_args = TrainingArguments(
+        output_dir="my_awesome_mind_model",
+        evaluation_strategy="epoch",
+        save_strategy="epoch",
+        learning_rate=3e-5,
+        per_device_train_batch_size=32,
+        gradient_accumulation_steps=4,
+        per_device_eval_batch_size=32,
+        num_train_epochs=10,
+        warmup_ratio=0.1,
+        logging_steps=10,
+        load_best_model_at_end=True,
+        metric_for_best_model="accuracy",
+        push_to_hub=True,
+    )
 
-    logger.info(f"-------------------Persist model-------------------")
-    model_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(model_path, "wb") as f:
-        dump(model, f)
-    logger.info(f"Persisted model to {model_path}")
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=encoded_minds["train"],
+        eval_dataset=encoded_minds["test"],
+        tokenizer=feature_extractor,
+        compute_metrics=compute_metrics,
+    )
+
+    trainer.train()
 
 
 def initiate_model(ensemble_model, model_config):
