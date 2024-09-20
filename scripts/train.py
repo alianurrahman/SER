@@ -15,7 +15,7 @@ import pandas as pd
 import sklearn
 from transformers import AutoFeatureExtractor
 
-from utility import load_data, parse_config, set_logger
+from utility import load_data, parse_config
 
 
 @click.command()

@@ -1,13 +1,6 @@
 from __future__ import unicode_literals
 
-import spleeter
-import yt_dlp as youtube_dl
 from pydub import AudioSegment
-from pydub.silence import split_on_silence
-import csv
-from pathlib import Path
-from termcolor import colored
-import os
 import yaml
 
 def parse_config(config_file):
@@ -27,11 +20,4 @@ def convert_audio(audio_file):
     sound = sound.set_sample_width(2) # 2 corresponds to 16-bit sample width in Pydub
     sound.export(audio_file, format ="wav")
 
-ydl_opts = {
-    "format": "bestaudio/best",
-    "audio-format": "wav",
-    "outtmpl": "audio.wav",
-    "noplaylist" : True
-} # customizing the downloaded audio for our needs
-link_num = 1 # iterates over the links in the TXT file
-links_file = "/content/links.txt" # File containing links to YouTube videos
+

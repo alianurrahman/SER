@@ -1,3 +1,12 @@
+# customizing the downloaded audio for our needs
+ydl_opts:
+  format: "bestaudio/best"
+  audio-format: "wav"
+  outtmpl: "audio.wav"
+  noplaylist: True
+
+links_file: "/content/links.txt" # File containing links to YouTube videos
+categories: ['angry', 'disgust', 'fear', 'happy', 'neutral', 'ps', 'sad'] # Emotion Labels
 
 etl:
   raw_data_file: "data/winequality.csv"
@@ -10,12 +19,6 @@ train:
   ensemble_model: "RandomForestClassifier"
   model_config: {n_estimators: 100, random_state: 42}
   model_path: "model/rf_model.pkl"
-
-# train:
-#   processed_train: "data/train.csv"
-#   ensemble_model: "GradientBoostingClassifier"
-#   model_config: {n_estimators: 100, random_state: 42}
-#   model_path: "model/gb_model.pkl"
 
 predict:
   model_path: "model/rf_model.pkl"
