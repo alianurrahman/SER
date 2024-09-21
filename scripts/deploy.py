@@ -7,9 +7,9 @@ Usage:
     python3 ./scripts/predict.py
 
 """
-import evaluate
-import numpy as np
+from huggingface_hub import notebook_login
 
 
-if __name__ == "__main__":
-    print("hello world")
+if __name__ == '__main__':
+    notebook_login()
+    trainer.push_to_hub()

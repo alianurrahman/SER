@@ -5,7 +5,7 @@ ydl_opts:
   outtmpl: "audio.wav"
   noplaylist: True
 
-links_file: "/content/links.txt" # File containing links to YouTube videos
+links_file: "./../data/links.txt" # File containing links to YouTube videos
 categories: ['angry', 'disgust', 'fear', 'happy', 'neutral', 'ps', 'sad'] # Emotion Labels
 
 etl:
@@ -14,11 +14,24 @@ etl:
   test_size: 0.2
   random_state: 42
 
-train:
-  processed_train: "data/train.csv"
-  ensemble_model: "RandomForestClassifier"
-  model_config: {n_estimators: 100, random_state: 42}
-  model_path: "model/rf_model.pkl"
+training_arguments:
+  output_dir: "model"
+  evaluation_strategy: "epoch"
+  save_strategy: "epoch"
+  learning_rate: "3e-5"
+  per_device_train_batch_size: 32
+  gradient_accumulation_steps: 4
+  per_device_eval_batch_size: 32
+  num_train_epochs: 10
+  warmup_ratio: 0.1
+  logging_steps: 10
+  load_best_model_at_end: True
+  metric_for_best_model: "accuracy"
+  push_to_hub: True
+
+trainer:
+  train_dataset: "data"
+  eval_dataset: "data"
 
 predict:
   model_path: "model/rf_model.pkl"

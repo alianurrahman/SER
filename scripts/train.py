@@ -7,15 +7,13 @@ Usage:
     python3 ./scripts/train.py
 
 """
-from pathlib import Path
-from pickle import dump
 
 import click
-import pandas as pd
 import sklearn
-from transformers import AutoFeatureExtractor
+from transformers import AutoModelForAudioClassification, TrainingArguments, Trainer
 
-from utility import load_data, parse_config
+from scripts.etl import feature_extractor
+from scripts.utility import parse_config, compute_metrics
 
 
 @click.command()
@@ -30,33 +28,32 @@ def train(config_file):
     Returns:
         None
     """
-    from transformers import AutoModelForAudioClassification, TrainingArguments, Trainer
-
-    num_labels = len(id2label)
+    config = parse_config(config_file)
     model = AutoModelForAudioClassification.from_pretrained(
-        "facebook/wav2vec2-base", num_labels=num_labels, label2id=label2id, id2label=id2label
+        "facebook/wav2vec2-base", num_labels=num_labels
     )
+
     training_args = TrainingArguments(
-        output_dir="my_awesome_mind_model",
-        evaluation_strategy="epoch",
-        save_strategy="epoch",
-        learning_rate=3e-5,
-        per_device_train_batch_size=32,
-        gradient_accumulation_steps=4,
-        per_device_eval_batch_size=32,
-        num_train_epochs=10,
-        warmup_ratio=0.1,
-        logging_steps=10,
-        load_best_model_at_end=True,
-        metric_for_best_model="accuracy",
-        push_to_hub=True,
+        output_dir=config["training_arguments"]["output_dir"],
+        evaluation_strategy=config["training_arguments"]["evaluation_strategy"],
+        save_strategy=config["training_arguments"]["save_strategy"],
+        learning_rate=config["training_arguments"]["learning_rate"],
+        per_device_train_batch_size=config["training_arguments"]["per_device_train_batch_size"],
+        gradient_accumulation_steps=config["training_arguments"]["gradient_accumulation_steps"],
+        per_device_eval_batch_size=config["training_arguments"]["per_device_eval_batch_size"],
+        num_train_epochs=config["training_arguments"]["num_train_epochs"],
+        warmup_ratio=config["training_arguments"]["warmup_ratio"],
+        logging_steps=config["training_arguments"]["logging_steps"],
+        load_best_model_at_end=config["training_arguments"]["load_best_model_at_end"],
+        metric_for_best_model=config["training_arguments"]["accuracy"],
+        push_to_hub=config["training_arguments"]["push_to_hub"],
     )
 
     trainer = Trainer(
         model=model,
         args=training_args,
-        train_dataset=encoded_minds["train"],
-        eval_dataset=encoded_minds["test"],
+        train_dataset=config["trainer"]["train_dataset"],
+        eval_dataset=config["trainer"]["eval_dataset"],
         tokenizer=feature_extractor,
         compute_metrics=compute_metrics,
     )
