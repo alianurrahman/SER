@@ -16,7 +16,7 @@ from scripts.utility import parse_config, compute_metrics
 
 
 @click.command()
-@click.argument("config_file", type=str, default="scripts/config.yml")
+@click.argument("config_file", type=str, default="config.yaml")
 def train(config_file):
     """
     Main function that trains & persists model based on training set
@@ -29,13 +29,15 @@ def train(config_file):
     """
     config = parse_config(config_file)
     model = AutoModelForAudioClassification.from_pretrained("facebook/wav2vec2-base",
-        num_labels=config["dataset"]["num_label"], id2label=id2label, label2id=label2id)
+                                                            num_labels=config["dataset"]["num_label"],
+                                                            id2label=id2label, label2id=label2id)
 
     training_args = TrainingArguments(**config["training_arguments"]  # training args
-    )
+                                      )
 
     trainer = Trainer(model=model, args=training_args, train_dataset=encoded_ser["train"],
-        eval_dataset=encoded_ser["val"], tokenizer=feature_extractor, compute_metrics=compute_metrics, )
+                      eval_dataset=encoded_ser["test"], tokenizer=feature_extractor,
+                      compute_metrics=compute_metrics, )
 
     trainer.train()
 

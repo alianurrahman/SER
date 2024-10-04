@@ -1,20 +1,23 @@
 # -*- coding: utf-8 -*-
 
 """
-This script is used to train and export ML model according to config
+This script is used to run convert the raw data to train and test data
+It is designed to be idempotent [stateless transformation]
 
 Usage:
     python3 ./scripts/train.py
 
 """
 
+from datasets import load_dataset, Audio
 from transformers import AutoFeatureExtractor
-from datasets import load_dataset
-
 
 feature_extractor = AutoFeatureExtractor.from_pretrained("facebook/wav2vec2-base")
-dataset = load_dataset("audiofolder", data_dir="../data/examples/datas")
+dataset = load_dataset("audiofolder", data_dir="../data/examples/datas", split="train")
 
+dataset = dataset.cast_column("audio", Audio(sampling_rate=16000))
+
+dataset = dataset.train_test_split(test_size=.2)
 labels = dataset["train"].features["label"].names
 label2id, id2label = dict(), dict()
 
@@ -37,12 +40,18 @@ def preprocess_function(examples):
     inputs = feature_extractor(
         audio_arrays,
         sampling_rate=feature_extractor.sampling_rate,
-        max_length=16000,
+        max_length=16000,  # length of feature vectors
         truncation=True,
         padding=True
     )
     return inputs
 
 
+encoded_ser = dataset.map(preprocess_function, remove_columns="audio", batched=True)
+
 if __name__ == "__main__":
-    encoded_ser = dataset.map(preprocess_function, remove_columns="audio", batched=True)
+    print(dataset["train"][0])
+    print(len(dataset["train"][0]["audio"]["array"]))
+    print(encoded_ser["train"])
+    print(len(encoded_ser["train"][0]["input_values"]))
+    print(id2label['2'])
