@@ -40,7 +40,7 @@ def preprocess_function(examples):
     inputs = feature_extractor(
         audio_arrays,
         sampling_rate=feature_extractor.sampling_rate,
-        max_length=16000,  # length of feature vectors
+        max_length=16000,  # length of feature vectors * 768 dimensions
         truncation=True,
         padding=True
     )
