@@ -5,7 +5,7 @@ This script is used to run convert the raw data to train and test data
 It is designed to be idempotent [stateless transformation]
 
 Usage:
-    python3 ./scripts/train.py
+    none
 
 """
 
@@ -48,10 +48,3 @@ def preprocess_function(examples):
 
 
 encoded_ser = dataset.map(preprocess_function, remove_columns="audio", batched=True)
-
-if __name__ == "__main__":
-    print(dataset["train"][0])
-    print(len(dataset["train"][0]["audio"]["array"]))
-    print(encoded_ser["train"])
-    print(len(encoded_ser["train"][0]["input_values"]))
-    print(id2label['2'])
