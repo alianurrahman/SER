@@ -13,7 +13,7 @@ from datasets import load_dataset, Audio
 from transformers import AutoFeatureExtractor
 
 feature_extractor = AutoFeatureExtractor.from_pretrained("facebook/wav2vec2-base")
-dataset = load_dataset("audiofolder", data_dir="../data/examples/datas", split="train")
+dataset = load_dataset("audiofolder", data_dir="../examples/datas", split="train")
 
 dataset = dataset.cast_column("audio", Audio(sampling_rate=16000))
 
