@@ -11,11 +11,18 @@ def parse_config(config_file):
 
 # Evaluate Model
 def compute_metrics(eval_prediction):
-    metric1 = evaluate.load("accuracy")
-    metric2 = evaluate.load("f1")
+    accuracy_metric = evaluate.load("accuracy")
+    precision_metric = evaluate.load("precision")
+    recall_metric = evaluate.load("recall")
+    f1_metric = evaluate.load("f1")
     predictions = np.argmax(eval_prediction.predictions, axis=1)
 
-    accuracy = metric1.compute(predictions=predictions, references=eval_prediction.label_ids)["accuracy"]
-    f1 = metric2.compute(predictions=predictions, references=eval_prediction.label_ids, average="micro")["f1"]
+    accuracy = accuracy_metric.compute(predictions=predictions, references=eval_prediction.label_ids)["accuracy"]
+    precision = \
+    precision_metric.compute(predictions=predictions, references=eval_prediction.label_ids, average="weighted")[
+        "precision"]
+    recall = recall_metric.compute(predictions=predictions, references=eval_prediction.label_ids, average="weighted")[
+        "recall"]
+    f1 = f1_metric.compute(predictions=predictions, references=eval_prediction.label_ids, average="weighted")["f1"]
 
-    return {"accuracy": accuracy, "f1": f1}
+    return {"accuracy": accuracy, "precision": precision, "recall": recall, "f1": f1}
