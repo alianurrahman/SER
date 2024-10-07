@@ -1,0 +1,19 @@
+dataset:
+  num_label: 5
+
+training_arguments:
+  output_dir: "wav2vec2-base-indonesian-speech-emotion-recognition"
+  eval_strategy: "epoch"
+  save_strategy: "epoch"
+  learning_rate: 3.0e-5 #3e-5
+  per_device_train_batch_size: 32
+  per_device_eval_batch_size: 32
+  gradient_accumulation_steps: 2
+  gradient_checkpointing: True
+  num_train_epochs: 10
+  warmup_ratio: 0.1
+  logging_steps: 10
+  report_to: "tensorboard"
+  load_best_model_at_end: True
+  metric_for_best_model: "accuracy"
+  push_to_hub: True
