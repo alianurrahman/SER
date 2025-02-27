@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+
+"""
+all utilities for trainer
+
+Usage:
+    none
+
+"""
+
 import evaluate
 import numpy as np
 import yaml
@@ -19,10 +29,9 @@ def compute_metrics(eval_prediction):
 
     accuracy = accuracy_metric.compute(predictions=predictions, references=eval_prediction.label_ids)["accuracy"]
     precision = \
-    precision_metric.compute(predictions=predictions, references=eval_prediction.label_ids, average="weighted")[
-        "precision"]
+        precision_metric.compute(predictions=predictions, references=eval_prediction.label_ids, average="weighted")[
+            "precision"]
     recall = recall_metric.compute(predictions=predictions, references=eval_prediction.label_ids, average="weighted")[
         "recall"]
     f1 = f1_metric.compute(predictions=predictions, references=eval_prediction.label_ids, average="weighted")["f1"]
-
     return {"accuracy": accuracy, "precision": precision, "recall": recall, "f1": f1}
