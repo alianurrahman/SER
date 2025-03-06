@@ -8,16 +8,16 @@ Usage:
     none
 
 """
-
+import torch
 from datasets import load_dataset, Audio
 from transformers import AutoFeatureExtractor
 
 feature_extractor = AutoFeatureExtractor.from_pretrained("facebook/wav2vec2-base")
-dataset = load_dataset("audiofolder", data_dir="../data")
+dataset = load_dataset("audiofolder", data_dir="../data", split="train")
 
 dataset = dataset.cast_column("audio", Audio(sampling_rate=16000))
 
-# dataset = dataset.train_test_split(test_size=.2)
+dataset = dataset.train_test_split(test_size=.2)
 labels = dataset["train"].features["label"].names
 label2id, id2label = dict(), dict()
 
@@ -42,7 +42,7 @@ def preprocess_function(examples):
         sampling_rate=feature_extractor.sampling_rate,
         # max_length=16000,  # length of feature vectors * 768 dimensions  * 768 dimensions
         # truncation=True,
-        # padding=True
+        padding="longest"
     )
     return inputs
 
@@ -59,3 +59,4 @@ if __name__ == "__main__":
 
     print(encoded_ser["train"].features["input_values"])
     print(len(encoded_ser["train"][1]["input_values"]))
+    print(len(encoded_ser["train"][2]["input_values"]))
