@@ -1,0 +1,4 @@
+/scripts/wandb/
+/scripts/wav2vec2-base-indonesian-speech-emotion-recognition/
+.idea
+.DS_store
