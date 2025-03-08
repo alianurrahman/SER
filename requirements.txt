@@ -1,0 +1,9 @@
+datasets==3.0.1
+evaluate==0.4.3
+numpy~=1.26.4
+PyYAML==6.0.2
+transformers==4.47.0
+click~=8.1.7
+torch~=2.2.2
+librosa~=0.10.2.post1
+matplotlib~=3.9.4
