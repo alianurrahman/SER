@@ -10,8 +10,10 @@ Usage:
 import click
 from transformers import AutoModelForAudioClassification, TrainingArguments, Trainer
 
-from scripts.etl import feature_extractor, encoded_ser, id2label, label2id
+from scripts.etl import feature_extractor, prepare_dataset
 from scripts.utility import parse_config, compute_metrics
+
+encoded_ser, label2id, id2label = prepare_dataset("../data")
 
 
 @click.command()
@@ -35,10 +37,11 @@ def train(config_file):
     training_args = TrainingArguments(**config["training_arguments"]  # training args
                                       )
 
-    trainer = Trainer(model=model, args=training_args, train_dataset=encoded_ser["train"],
-                      eval_dataset=encoded_ser["test"], processing_class=feature_extractor,
+    trainer = Trainer(model=model, args=training_args, train_dataset=encoded_ser["train"].with_format("torch"),
+                      eval_dataset=encoded_ser["test"].with_format("torch"), processing_class=feature_extractor,
                       compute_metrics=compute_metrics, )
 
+    print(trainer.args.device)
     trainer.train()
 
 

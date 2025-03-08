@@ -8,22 +8,10 @@ Usage:
     none
 
 """
-
 from datasets import load_dataset, Audio
 from transformers import AutoFeatureExtractor
 
 feature_extractor = AutoFeatureExtractor.from_pretrained("facebook/wav2vec2-base")
-dataset = load_dataset("audiofolder", data_dir="../data")
-
-dataset = dataset.cast_column("audio", Audio(sampling_rate=16000))
-
-# dataset = dataset.train_test_split(test_size=.2)
-labels = dataset["train"].features["label"].names
-label2id, id2label = dict(), dict()
-
-for i, label in enumerate(labels):
-    label2id[label] = str(i)
-    id2label[str(i)] = label
 
 
 def preprocess_function(examples):
@@ -42,20 +30,33 @@ def preprocess_function(examples):
         sampling_rate=feature_extractor.sampling_rate,
         # max_length=16000,  # length of feature vectors * 768 dimensions  * 768 dimensions
         # truncation=True,
-        # padding=True
+        padding="longest"
     )
     return inputs
 
 
-encoded_ser = dataset.map(preprocess_function, remove_columns="audio", batched=True)
+def prepare_dataset(path: str):
+    """
+        ETL function that load indonesian_ser data and convert to train and test set
 
-if __name__ == "__main__":
-    print(dataset)
-    print(dataset["train"].features["audio"])
-    print(dataset["test"].features["audio"])
-    print("---------------------------------")
-    print(len(dataset["train"][1]["audio"]['array']))
-    print(dataset["test"][1]["audio"]['array'])
+        Args:
+            path [str]: path to dataset
 
-    print(encoded_ser["train"].features["input_values"])
-    print(len(encoded_ser["train"][1]["input_values"]))
+        Returns:
+            encoded_ser [any]: preprocessed audio
+            label2id [any] :
+            id2label [any] :
+        """
+    dataset = load_dataset("audiofolder", data_dir=path, split="train")
+    dataset = dataset.cast_column("audio", Audio(sampling_rate=16000))
+    dataset = dataset.train_test_split(test_size=.2)
+    labels = dataset["train"].features["label"].names
+    label2id, id2label = dict(), dict()
+
+    for i, label in enumerate(labels):
+        label2id[label] = str(i)
+        id2label[str(i)] = label
+
+    encoded_ser = dataset.map(preprocess_function, remove_columns="audio", batched=True)
+
+    return encoded_ser, label2id, id2label

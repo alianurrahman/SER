@@ -9,6 +9,8 @@ Usage:
 """
 
 import evaluate
+import librosa.display
+import matplotlib.pyplot as plt
 import numpy as np
 import yaml
 
@@ -17,6 +19,15 @@ def parse_config(config_file):
     with open(config_file, "rb") as f:
         config = yaml.safe_load(f)
     return config
+
+
+def _plot_signal_and_augmented_signal(signal, augmented_signal, sr):
+    fix, ax = plt.subplots(nrows=2)
+    librosa.display.waveshow(signal, sr=sr, ax=ax[0])
+    ax[0].set(title="original signal")
+    librosa.display.waveshow(augmented_signal, sr=sr, ax=ax[1])
+    ax[1].set(title="augmented signal")
+    plt.show()
 
 
 # Evaluate Model
