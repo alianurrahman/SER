@@ -10,6 +10,7 @@ Usage:
 """
 from datasets import load_dataset, Audio
 from transformers import AutoFeatureExtractor
+from data_augmentation import augment_data
 
 feature_extractor = AutoFeatureExtractor.from_pretrained("facebook/wav2vec2-base")
 
@@ -24,6 +25,7 @@ def preprocess_function(examples):
         Returns:
             inputs [any]: preprocess audio
         """
+
     audio_arrays = [x["array"] for x in examples["audio"]]
     inputs = feature_extractor(
         audio_arrays,
@@ -47,16 +49,17 @@ def prepare_dataset(path: str):
             label2id [any] :
             id2label [any] :
         """
-    dataset = load_dataset("audiofolder", data_dir=path, split="train")
+    dataset = load_dataset("audiofolder", data_dir=path)
     dataset = dataset.cast_column("audio", Audio(sampling_rate=16000))
-    dataset = dataset.train_test_split(test_size=.2)
+    # dataset = dataset.train_test_split(test_size=.2)
     labels = dataset["train"].features["label"].names
     label2id, id2label = dict(), dict()
 
     for i, label in enumerate(labels):
         label2id[label] = str(i)
         id2label[str(i)] = label
-
+# TODO: only augmented dataset train, change encoded_ser with augmented train dataset and preprocess all data.
+    dataset["train"] = dataset["train"].map(augment_data, remove_columns=["audio", "label"], batched=True)
     encoded_ser = dataset.map(preprocess_function, remove_columns="audio", batched=True)
 
     return encoded_ser, label2id, id2label
