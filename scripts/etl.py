@@ -58,7 +58,7 @@ def prepare_dataset(path: str):
     for i, label in enumerate(labels):
         label2id[label] = str(i)
         id2label[str(i)] = label
-# TODO: only augmented dataset train, change encoded_ser with augmented train dataset and preprocess all data.
+
     dataset["train"] = dataset["train"].map(augment_data, remove_columns=["audio", "label"], batched=True)
     encoded_ser = dataset.map(preprocess_function, remove_columns="audio", batched=True)
 
