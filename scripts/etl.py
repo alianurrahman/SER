@@ -10,7 +10,7 @@ Usage:
 """
 from datasets import load_dataset, Audio
 from transformers import AutoFeatureExtractor
-from data_augmentation import augment_data
+from data_augmentation import augment_data, up_sampling
 
 feature_extractor = AutoFeatureExtractor.from_pretrained("facebook/wav2vec2-base")
 
@@ -61,5 +61,6 @@ def prepare_dataset(path: str):
 
     dataset["train"] = dataset["train"].map(augment_data, remove_columns=["audio", "label"], batched=True)
     encoded_ser = dataset.map(preprocess_function, remove_columns="audio", batched=True)
+    encoded_ser["train"] = encoded_ser["train"].map(up_sampling, remove_columns="input_values", batched=True)
 
     return encoded_ser, label2id, id2label

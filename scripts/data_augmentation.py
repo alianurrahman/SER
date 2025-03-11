@@ -9,6 +9,7 @@ Usage:
 """
 import librosa
 import numpy as np
+from imblearn.over_sampling import SMOTE
 
 
 def add_white_noise(signal, noise_factor):
@@ -46,3 +47,13 @@ def augment_data(examples):
         labels.extend([label] * 3)
 
     return {"audio": outputs, "label": labels}
+
+
+def up_sampling(examples):
+    x = [x for x in examples["input_values"]]
+    y = [y for y in examples['label']]
+
+    smote = SMOTE(sampling_strategy="auto", random_state=42)
+    x_resampled, y_resampled = smote.fit_resample(x, y)
+
+    return {"input_values": x_resampled, "label": y_resampled}
