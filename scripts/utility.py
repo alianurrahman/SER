@@ -13,6 +13,9 @@ import librosa.display
 import matplotlib.pyplot as plt
 import numpy as np
 import yaml
+import wandb
+
+from scripts.etl import labels
 
 
 def parse_config(config_file):
@@ -45,4 +48,10 @@ def compute_metrics(eval_prediction):
     recall = recall_metric.compute(predictions=predictions, references=eval_prediction.label_ids, average="weighted")[
         "recall"]
     f1 = f1_metric.compute(predictions=predictions, references=eval_prediction.label_ids, average="weighted")["f1"]
+
+    wandb.log({"conf_mat": wandb.plot.confusion_matrix(probs=None,
+                                                       preds=predictions,
+                                                       y_true=eval_prediction.label_ids,
+                                                       class_names=labels)})
+
     return {"accuracy": accuracy, "precision": precision, "recall": recall, "f1": f1}

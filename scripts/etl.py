@@ -59,8 +59,11 @@ def prepare_dataset(path: str):
         label2id[label] = str(i)
         id2label[str(i)] = label
 
-    dataset["train"] = dataset["train"].map(augment_data, remove_columns=["audio", "label"], batched=True)
+    # dataset["train"] = dataset["train"].map(augment_data, remove_columns=["audio", "label"], batched=True)
     encoded_ser = dataset.map(preprocess_function, remove_columns="audio", batched=True)
-    encoded_ser["train"] = encoded_ser["train"].map(up_sampling, remove_columns="input_values", batched=True)
+    # encoded_ser["train"] = encoded_ser["train"].map(up_sampling, remove_columns="input_values", batched=True)
 
-    return encoded_ser, label2id, id2label
+    return encoded_ser, label2id, id2label, labels
+
+
+encoded_ser, label2id, id2label, labels = prepare_dataset("../data")

@@ -10,10 +10,8 @@ Usage:
 import click
 from transformers import AutoModelForAudioClassification, TrainingArguments, Trainer
 
-from scripts.etl import feature_extractor, prepare_dataset
+from scripts.etl import feature_extractor,encoded_ser, label2id, id2label
 from scripts.utility import parse_config, compute_metrics
-
-encoded_ser, label2id, id2label = prepare_dataset("../data")
 
 
 @click.command()
