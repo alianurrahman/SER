@@ -9,10 +9,12 @@ Usage:
 
 """
 from datasets import load_dataset, Audio
-from transformers import AutoFeatureExtractor
+from transformers import Wav2Vec2Processor, DataCollatorWithPadding
 from data_augmentation import augment_data, up_sampling
 
-feature_extractor = AutoFeatureExtractor.from_pretrained("facebook/wav2vec2-base")
+processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base")
+
+data_collator = DataCollatorWithPadding(tokenizer=processor, padding=True, return_tensors='pt')
 
 
 def preprocess_function(examples):
@@ -27,12 +29,13 @@ def preprocess_function(examples):
         """
 
     audio_arrays = [x["array"] for x in examples["audio"]]
-    inputs = feature_extractor(
+    inputs = processor(
         audio_arrays,
-        sampling_rate=feature_extractor.sampling_rate,
+        sampling_rate=processor.feature_extractor.sampling_rate,
+        return_attention_mask=True,
         # max_length=16000,  # length of feature vectors * 768 dimensions  * 768 dimensions
         # truncation=True,
-        padding="longest"
+        # padding="longest"
     )
     return inputs
 

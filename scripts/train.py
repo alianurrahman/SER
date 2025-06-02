@@ -8,9 +8,9 @@ Usage:
 """
 
 import click
-from transformers import AutoModelForAudioClassification, TrainingArguments, Trainer
+from transformers import Wav2Vec2ForSequenceClassification, TrainingArguments, Trainer
 
-from scripts.etl import feature_extractor,encoded_ser, label2id, id2label
+from scripts.etl import data_collator,encoded_ser, label2id, id2label
 from scripts.utility import parse_config, compute_metrics
 
 
@@ -27,7 +27,7 @@ def train(config_file):
         None
     """
     config = parse_config(config_file)
-    model = AutoModelForAudioClassification.from_pretrained(
+    model = Wav2Vec2ForSequenceClassification.from_pretrained(
         config["pre_train_model"]["wav2vec2_base"],
         num_labels=config["dataset"]["num_label"],
         id2label=id2label, label2id=label2id)
@@ -36,7 +36,7 @@ def train(config_file):
                                       )
 
     trainer = Trainer(model=model, args=training_args, train_dataset=encoded_ser["train"].with_format("torch"),
-                      eval_dataset=encoded_ser["test"].with_format("torch"), processing_class=feature_extractor,
+                      eval_dataset=encoded_ser["test"].with_format("torch"), data_collator=data_collator,
                       compute_metrics=compute_metrics, )
 
     print(trainer.args.device)

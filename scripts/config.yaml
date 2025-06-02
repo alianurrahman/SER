@@ -5,11 +5,11 @@ pre_train_model:
   wav2vec2_base: "facebook/wav2vec2-base"
   wav2vec2_cr: "alianurrahman/wav2vec2_cr"
   wav2vec2_cr_rd: "alianurrahman/wav2vec2_cr_rd"
-  wav2vec2_cr_rd_sv: "alianurrahman/wav2vec2-base-crema-ravdess-savee"
+  wav2vec2_cr_rd_sv: "alianurrahman/wav2vec2_cr_rd_sv"
   wav2vec2_cr_rd_sv_ts: "alianurrahman/wav2vec2_cr_rd_sv_ts"
 
 training_arguments:
-  output_dir: "wav2vec2_full_data"
+  output_dir: "savee"
   eval_strategy: "epoch"
   save_strategy: "epoch"
   logging_strategy: "epoch"
@@ -20,9 +20,9 @@ training_arguments:
   gradient_checkpointing: True
   num_train_epochs: 20
   seed: 42
-  run_name: "wav2vec2_full_data"
+  run_name: "wav2vec2_savee_aug"
   #  warmup_ratio: 0.1
-  report_to: "wandb"
-  load_best_model_at_end: True
-  metric_for_best_model: "accuracy"
-  push_to_hub: True
+#  report_to: "wandb"
+#  load_best_model_at_end: True
+#  metric_for_best_model: "accuracy"
+#  push_to_hub: True
