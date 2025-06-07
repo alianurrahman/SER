@@ -24,20 +24,20 @@ emotions = ['angry', 'disgust', 'fear', 'happy', 'sad']
 
 It achieves the following results on the evaluation set:
 
-- Loss: 0.5023
-- Accuracy: 0.8223
+- Loss: -
+- Accuracy: 0.41223
 
-## Model description
+## Abstract
 
-More information needed
-
-## Intended uses & limitations
-
-More information needed
-
-## Training and evaluation data
-
-More information needed
+Speech Emotion Recognition (SER) presents revolutionary potential in transforming how we interact with technology, 
+enabling machines to interpret and respond to human emotions through speech. Despite this promise, 
+challenges such as diverse accents and limited emotion-labeled datasets—especially in underrepresented languages like Bahasa Indonesia—continue 
+to hinder performance. This study proposes a sequential fine-tuning approach using Wav2Vec 2.0 in two phases. 
+In the first phase, the model is pre-trained on four widely used English SER datasets: CREMA-D, RAVDESS, SAVEE, and TESS. 
+In the second phase, the model is further fine-tuned on a natural Indonesian speech dataset collected from YouTube, 
+covering five emotion classes. Results show that this two-phase fine-tuning approach significantly outperforms the baseline model 
+trained solely on limited Indonesian data and achieves accuracy that approaches human-level performance (HLP). 
+The findings highlight the effectiveness of cross-lingual transfer learning in enhancing SER performance in low-resource languages.
 
 ## Training procedure
 
@@ -45,15 +45,14 @@ More information needed
 
 The following hyperparameters were used during training:
 
-- learning_rate: 0.0001
-- train_batch_size: 4
-- eval_batch_size: 4
+- learning_rate: 0.00001
+- train_batch_size: 32
+- eval_batch_size: 32
 - seed: 42
 - gradient_accumulation_steps: 2
-- total_train_batch_size: 8
 - optimizer: Adam with betas=(0.9,0.999) and epsilon=1e-08
 - lr_scheduler_type: linear
-- num_epochs: 3
+- num_epochs: 20
 - mixed_precision_training: Native AMP
 
 ### Training results
@@ -92,7 +91,8 @@ Any doubt, contact me on [Twitter](https://x.com/alianur_rahman).
 
 ### Framework versions
 
-- Transformers 4.45.1
+- Transformers 4.52.4
 - Pytorch 2.2.2
 - Datasets 3.0.1
-- Tokenizers 0.20.0
+- Evaluate 0.4.3
+- Accelerate 0.34.2
